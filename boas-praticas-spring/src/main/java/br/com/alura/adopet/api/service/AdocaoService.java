@@ -6,6 +6,7 @@ import br.com.alura.adopet.api.repository.AdocaoRepository;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +24,7 @@ public class AdocaoService {
         this.emailService = emailService;
     }
 
+    @Transactional
     public void solicitar(Adocao adocao) throws ValidationException {
         if (adocao.getPet().getAdotado()) throw new ValidationException("Pet já foi adotado!");
 
@@ -58,6 +60,15 @@ public class AdocaoService {
         );
     }
 
+    /*
+     * Envia email para o abrigo com a solicitação de adoção.
+     * O email informa que uma solicitação de adoção foi feita
+     * para o pet e pede para o abrigo avaliar para aprovação
+     * ou reprovação.
+     *
+     * @param adocao informação da adoção
+     */
+    @Transactional
     public void aprovar(Adocao adocao) {
         adocao.setStatus(StatusAdocao.APROVADO);
         adocaoRepository.save(adocao);
@@ -68,10 +79,10 @@ public class AdocaoService {
         );
     }
 
+    @Transactional
     public void reprovar(Adocao adocao) {
         adocao.setStatus(StatusAdocao.REPROVADO);
         adocaoRepository.save(adocao);
-
 
         emailService.enviarEmail(adocao.getTutor().getEmail(),
                 "Adoção reprovada",
