@@ -12,25 +12,19 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ValidacaoPetComAdocaoEmAndamento implements ValidacaoSolicidacaoAdocao{
+public class ValidacaoPetComAdocaoEmAndamento implements ValidacaoSolicidacaoAdocao {
 
     private final AdocaoRepository adocaoRepository;
-    private final PetService petService;
 
-    public ValidacaoPetComAdocaoEmAndamento(AdocaoRepository adocaoRepository, PetService petService) {
+    public ValidacaoPetComAdocaoEmAndamento(AdocaoRepository adocaoRepository) {
         this.adocaoRepository = adocaoRepository;
-        this.petService = petService;
     }
 
     @Override
     public void validar(SolicitarAdocaoDTO dto) {
-        List<Adocao> adocoes = adocaoRepository.findAll();
-        Pet pet = petService.buscarPorId(dto.petId());
-
-        for (Adocao a : adocoes) {
-            if (a.getPet() == pet && a.getStatus() == StatusAdocao.AGUARDANDO_AVALIACAO) {
-                throw new ValidationException("Pet já está aguardando avaliação para ser adotado!");
-            }
+        if (adocaoRepository.existsByPetIdAndStatus(dto.petId(), StatusAdocao.AGUARDANDO_AVALIACAO)) {
+            throw new ValidationException("Pet já está aguardando avaliação para ser adotado!");
         }
     }
+
 }

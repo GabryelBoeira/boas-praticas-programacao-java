@@ -24,17 +24,10 @@ public class ValidacaoTutorComAdocaoEmAndamento implements ValidacaoSolicidacaoA
 
     @Override
     public void validar(SolicitarAdocaoDTO dto) {
-        List<Adocao> adocoes = adocaoRepository.findAll();
-        Tutor tutor = tutorService.buscarPorId(dto.tutorId());
+        Long totalAdocoes = adocaoRepository.countByTutorIdAndStatus(dto.tutorId(), StatusAdocao.APROVADO);
 
-        for (Adocao a : adocoes) {
-            int contador = 0;
-            if (a.getTutor() == tutor && a.getStatus() == StatusAdocao.APROVADO) {
-                contador = contador + 1;
-            }
-            if (contador == 5) {
-                throw new ValidationException("Tutor chegou ao limite máximo de 5 adoções!");
-            }
+        if (totalAdocoes >= 5L) {
+            throw new ValidationException("Tutor chegou ao limite máximo de 5 adoções!");
         }
     }
 }
