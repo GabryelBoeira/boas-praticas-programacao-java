@@ -28,13 +28,12 @@ public class Abrigo {
     @JsonManagedReference("abrigo_pets")
     private List<Pet> pets;
 
+    public Abrigo() {}
+
     public Abrigo(CadastrarAbrigoDTO dto) {
         this.nome = dto.nome();
         this.telefone = dto.telefone();
         this.email = dto.email();
-    }
-
-    public Abrigo() {
     }
 
     @Override

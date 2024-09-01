@@ -5,7 +5,6 @@ import br.com.alura.adopet.api.dto.Adocao.ReprovarAdocaoDTO;
 import br.com.alura.adopet.api.dto.Adocao.SolicitarAdocaoDTO;
 import br.com.alura.adopet.api.model.Adocao;
 import br.com.alura.adopet.api.model.Pet;
-import br.com.alura.adopet.api.enums.StatusAdocao;
 import br.com.alura.adopet.api.model.Tutor;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import br.com.alura.adopet.api.validacao.ValidacaoSolicidacaoAdocao;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -48,18 +46,12 @@ public class AdocaoService {
 
         validadores.forEach(v -> v.validar(solicitar));
 
-        Adocao adocao = new Adocao();
-        adocao.setPet(pet);
-        adocao.setTutor(tutor);
-        adocao.setData(LocalDateTime.now());
-        adocao.setStatus(StatusAdocao.AGUARDANDO_AVALIACAO);
-        adocao.setMotivo(solicitar.motivo());
-        adocaoRepository.save(adocao);
+        adocaoRepository.save(new Adocao(pet, tutor, solicitar.motivo()));
 
         emailService.enviarEmail(
-                adocao.getPet().getAbrigo().getEmail(),
+                pet.getAbrigo().getEmail(),
                 "Solicitação de adoção",
-                "Olá " + adocao.getPet().getAbrigo().getNome() + "!\n\nUma solicitação de adoção foi registrada hoje para o pet: " + adocao.getPet().getNome() + ". \nFavor avaliar para aprovação ou reprovação."
+                "Olá " + pet.getAbrigo().getNome() + "!\n\nUma solicitação de adoção foi registrada hoje para o pet: " + pet.getNome() + ". \nFavor avaliar para aprovação ou reprovação."
         );
     }
 
@@ -74,7 +66,7 @@ public class AdocaoService {
     @Transactional
     public void aprovar(AprovarAdocaoDTO aprovar) {
         Adocao adocao = adocaoRepository.findById(aprovar.idAdocao()).orElseThrow(() -> new ValidationException("Adoção não encontrada!"));
-        adocao.setStatus(StatusAdocao.APROVADO);
+        adocao.marcaComoAprovada();
         adocaoRepository.save(adocao);
 
         emailService.enviarEmail(adocao.getTutor().getEmail(),
@@ -86,8 +78,7 @@ public class AdocaoService {
     @Transactional
     public void reprovar(ReprovarAdocaoDTO reprovar) {
         Adocao adocao = adocaoRepository.findById(reprovar.idAdocao()).orElseThrow(() -> new ValidationException("Adoção não encontrada!"));
-        adocao.setJustificativaStatus(reprovar.justificativa());
-        adocao.setStatus(StatusAdocao.REPROVADO);
+        adocao.marcaComoReprovada(reprovar.justificativa());
         adocaoRepository.save(adocao);
 
         emailService.enviarEmail(adocao.getTutor().getEmail(),

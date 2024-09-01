@@ -20,10 +20,7 @@ public class TutorService {
 
     @Transactional
     public String cadastrar(CadastrarTutorDTO tutorDTO) throws ValidationException {
-        boolean telefoneJaCadastrado = tutorRepository.existsByTelefone(tutorDTO.telefone());
-        boolean emailJaCadastrado = tutorRepository.existsByEmail(tutorDTO.email());
-
-        if (telefoneJaCadastrado || emailJaCadastrado) {
+        if (tutorRepository.existsByTelefoneOrEmail(tutorDTO.telefone(), tutorDTO.email())) {
             throw new ValidationException("Dados já cadastrados para outro tutor!");
         }
 
@@ -32,7 +29,7 @@ public class TutorService {
     }
 
     public void atualizar(CadastrarTutorDTO tutorDTO) {
-        tutorRepository.save((new Tutor(tutorDTO)));
+        tutorRepository.save(new Tutor(tutorDTO));
     }
 
     public Tutor buscarPorId(Long id) {

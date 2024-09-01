@@ -14,14 +14,6 @@ import java.util.Objects;
 @Table(name = "tutores")
 public class Tutor {
 
-    public Tutor() {}
-
-    public Tutor(CadastrarTutorDTO dto) {
-        this.nome = dto.nome();
-        this.telefone = dto.telefone();
-        this.email = dto.email();
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +27,14 @@ public class Tutor {
     @OneToMany(mappedBy = "tutor")
     @JsonManagedReference("tutor_adocoes")
     private List<Adocao> adocoes;
+
+    public Tutor() {}
+
+    public Tutor(CadastrarTutorDTO dto) {
+        this.nome = dto.nome();
+        this.telefone = dto.telefone();
+        this.email = dto.email();
+    }
 
     public Long getId() {
         return id;

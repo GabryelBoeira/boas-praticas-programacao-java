@@ -33,17 +33,14 @@ public class Adocao {
     @JsonManagedReference("adocao_pets")
     private Pet pet;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Adocao adocao = (Adocao) o;
-        return Objects.equals(id, adocao.id);
-    }
+    public Adocao() {}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public Adocao(Pet pet, Tutor tutor, String motivo) {
+        this.pet= pet;
+        this.tutor = tutor;
+        this.data = LocalDateTime.now();
+        this.motivo = motivo;
+        this.status= StatusAdocao.AGUARDANDO_AVALIACAO;
     }
 
     public Long getId() {
@@ -100,5 +97,27 @@ public class Adocao {
 
     public void setJustificativaStatus(String justificativaStatus) {
         this.justificativaStatus = justificativaStatus;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Adocao adocao = (Adocao) o;
+        return Objects.equals(id, adocao.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public void marcaComoAprovada() {
+        this.status = StatusAdocao.APROVADO;
+    }
+
+    public void marcaComoReprovada(String justificativa) {
+        this.justificativaStatus = justificativa;
+        this.status = StatusAdocao.REPROVADO;
     }
 }

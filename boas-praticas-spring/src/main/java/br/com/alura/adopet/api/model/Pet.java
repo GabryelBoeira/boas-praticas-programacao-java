@@ -40,17 +40,18 @@ public class Pet {
     @JsonBackReference("adocao_pets")
     private Adocao adocao;
 
-    public Pet(CadastrarPetDTO petDTO) {
+    public Pet() {}
+
+    public Pet(CadastrarPetDTO petDTO, Abrigo abrigo) {
         this.tipo = petDTO.tipo();
         this.nome = petDTO.nome();
         this.raca = petDTO.raca();
         this.idade = petDTO.idade();
         this.cor = petDTO.cor();
         this.peso = petDTO.peso();
+        this.abrigo = abrigo;
+        this.adotado = false;
     }
-
-    public Pet() {}
-
 
     public Long getId() {
         return id;
