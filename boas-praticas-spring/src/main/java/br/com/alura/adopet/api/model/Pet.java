@@ -15,35 +15,25 @@ public class Pet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo")
     private TipoPet tipo;
 
-    @Column(name = "nome")
     private String nome;
 
-    @Column(name = "raca")
     private String raca;
 
-    @NotNull
-    @Column(name = "idade")
     private Integer idade;
 
-    @Column(name = "cor")
     private String cor;
 
-    @Column(name = "peso")
     private Float peso;
 
-    @Column(name = "adotado")
     private Boolean adotado;
 
     @ManyToOne
     @JsonBackReference("abrigo_pets")
-    @JoinColumn(name = "abrigo_id")
     private Abrigo abrigo;
 
     @OneToOne(mappedBy = "pet")
@@ -61,18 +51,6 @@ public class Pet {
 
     public Pet() {}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Pet pet = (Pet) o;
-        return Objects.equals(id, pet.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 
     public Long getId() {
         return id;
@@ -153,4 +131,18 @@ public class Pet {
     public void setAdocao(Adocao adocao) {
         this.adocao = adocao;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pet pet = (Pet) o;
+        return Objects.equals(id, pet.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }
