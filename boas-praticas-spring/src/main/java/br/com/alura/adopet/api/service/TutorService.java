@@ -35,7 +35,7 @@ public class TutorService {
         tutorRepository.save((new Tutor(tutorDTO)));
     }
 
-    protected Tutor buscarPorId(Long id) {
+    public Tutor buscarPorId(Long id) {
         return tutorRepository.getReferenceById(id);
     }
 }

@@ -42,27 +42,6 @@ public class AdocaoService {
         Tutor tutor = tutorService.buscarPorId(solicitar.tutorId());
         if (tutor == null) throw new ValidationException("Tutor não encontrado. Favor informar um tutor existente");
 
-        List<Adocao> adocoes = adocaoRepository.findAll();
-        for (Adocao a : adocoes) {
-            if (a.getTutor() == tutor && a.getStatus() == StatusAdocao.AGUARDANDO_AVALIACAO) {
-                throw new ValidationException("Tutor já possui outra adoção aguardando avaliação!");
-            }
-        }
-        for (Adocao a : adocoes) {
-            if (a.getPet() == pet && a.getStatus() == StatusAdocao.AGUARDANDO_AVALIACAO) {
-                throw new ValidationException("Pet já está aguardando avaliação para ser adotado!");
-            }
-        }
-        for (Adocao a : adocoes) {
-            int contador = 0;
-            if (a.getTutor() == tutor && a.getStatus() == StatusAdocao.APROVADO) {
-                contador = contador + 1;
-            }
-            if (contador == 5) {
-                throw new ValidationException("Tutor chegou ao limite máximo de 5 adoções!");
-            }
-        }
-
         Adocao adocao = new Adocao();
         adocao.setPet(pet);
         adocao.setTutor(tutor);

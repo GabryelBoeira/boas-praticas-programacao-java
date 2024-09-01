@@ -25,8 +25,8 @@ public class PetService {
                 .toList();
     }
 
-    protected Pet buscarPorId(Long aLong) {
-        return petRepository.getReferenceById(aLong);
+    public Pet buscarPorId(Long id) {
+        return petRepository.getReferenceById(id);
     }
 
 }
