@@ -1,5 +1,6 @@
 package br.com.alura.adopet.api.model;
 
+import br.com.alura.adopet.api.dto.abrigo.CadastrarAbrigoDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -18,16 +19,13 @@ public class Abrigo {
     @Column(name = "id")
     private Long id;
 
-    @NotBlank
     @Column(name = "nome")
     private String nome;
 
-    @NotBlank
     @Pattern(regexp = "\\(?\\d{2}\\)?\\d?\\d{4}-?\\d{4}")
     @Column(name = "telefone")
     private String telefone;
 
-    @NotBlank
     @Email
     @Column(name = "email")
     private String email;
@@ -35,6 +33,15 @@ public class Abrigo {
     @OneToMany(mappedBy = "abrigo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference("abrigo_pets")
     private List<Pet> pets;
+
+    public Abrigo(CadastrarAbrigoDTO dto) {
+        this.nome = dto.nome();
+        this.telefone = dto.telefone();
+        this.email = dto.email();
+    }
+
+    public Abrigo() {
+    }
 
     @Override
     public boolean equals(Object o) {

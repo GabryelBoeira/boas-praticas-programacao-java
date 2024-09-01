@@ -1,11 +1,11 @@
 package br.com.alura.adopet.api.service;
 
+import br.com.alura.adopet.api.dto.pet.DadosPetDTO;
 import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.repository.PetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,13 +18,15 @@ public class PetService {
         this.petRepository = petRepository;
     }
 
-    public List<Pet> listarTodosDisponiveis() {
-        List<Pet> pets = petRepository.findAll();
-        List<Pet> disponiveis = new ArrayList<>();
-        for (Pet pet : pets) {
-            if (pet.getAdotado() == false) {
-                disponiveis.add(pet);
-            }
-        }
+    public List<DadosPetDTO> listarTodosDisponiveis() {
+        return petRepository.findAllByAdotadoEquals(false)
+                .stream()
+                .map(DadosPetDTO::new)
+                .toList();
     }
+
+    protected Pet buscarPorId(Long aLong) {
+        return petRepository.getReferenceById(aLong);
+    }
+
 }

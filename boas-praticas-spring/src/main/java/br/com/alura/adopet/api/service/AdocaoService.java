@@ -1,7 +1,12 @@
 package br.com.alura.adopet.api.service;
 
+import br.com.alura.adopet.api.dto.Adocao.AprovarAdocaoDTO;
+import br.com.alura.adopet.api.dto.Adocao.ReprovarAdocaoDTO;
+import br.com.alura.adopet.api.dto.Adocao.SolicitarAdocaoDTO;
 import br.com.alura.adopet.api.model.Adocao;
-import br.com.alura.adopet.api.model.StatusAdocao;
+import br.com.alura.adopet.api.model.Pet;
+import br.com.alura.adopet.api.enums.StatusAdocao;
+import br.com.alura.adopet.api.model.Tutor;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,31 +22,40 @@ public class AdocaoService {
 
     private final AdocaoRepository adocaoRepository;
     private final EmailService emailService;
+    private final PetService petService;
+    private final TutorService tutorService;
 
     @Autowired
-    public AdocaoService(AdocaoRepository adocaoRepository, EmailService emailService) {
+    public AdocaoService(AdocaoRepository adocaoRepository, EmailService emailService, PetService petService, TutorService tutorService) {
         this.adocaoRepository = adocaoRepository;
         this.emailService = emailService;
+        this.petService = petService;
+        this.tutorService = tutorService;
     }
 
     @Transactional
-    public void solicitar(Adocao adocao) throws ValidationException {
-        if (adocao.getPet().getAdotado()) throw new ValidationException("Pet já foi adotado!");
+    public void solicitar(SolicitarAdocaoDTO solicitar) throws ValidationException {
+
+        Pet pet = petService.buscarPorId(solicitar.petId());
+        if (pet.getAdotado()) throw new ValidationException("Pet já foi adotado!");
+
+        Tutor tutor = tutorService.buscarPorId(solicitar.tutorId());
+        if (tutor == null) throw new ValidationException("Tutor não encontrado. Favor informar um tutor existente");
 
         List<Adocao> adocoes = adocaoRepository.findAll();
         for (Adocao a : adocoes) {
-            if (a.getTutor() == adocao.getTutor() && a.getStatus() == StatusAdocao.AGUARDANDO_AVALIACAO) {
+            if (a.getTutor() == tutor && a.getStatus() == StatusAdocao.AGUARDANDO_AVALIACAO) {
                 throw new ValidationException("Tutor já possui outra adoção aguardando avaliação!");
             }
         }
         for (Adocao a : adocoes) {
-            if (a.getPet() == adocao.getPet() && a.getStatus() == StatusAdocao.AGUARDANDO_AVALIACAO) {
+            if (a.getPet() == pet && a.getStatus() == StatusAdocao.AGUARDANDO_AVALIACAO) {
                 throw new ValidationException("Pet já está aguardando avaliação para ser adotado!");
             }
         }
         for (Adocao a : adocoes) {
             int contador = 0;
-            if (a.getTutor() == adocao.getTutor() && a.getStatus() == StatusAdocao.APROVADO) {
+            if (a.getTutor() == tutor && a.getStatus() == StatusAdocao.APROVADO) {
                 contador = contador + 1;
             }
             if (contador == 5) {
@@ -49,8 +63,12 @@ public class AdocaoService {
             }
         }
 
+        Adocao adocao = new Adocao();
+        adocao.setPet(pet);
+        adocao.setTutor(tutor);
         adocao.setData(LocalDateTime.now());
         adocao.setStatus(StatusAdocao.AGUARDANDO_AVALIACAO);
+        adocao.setMotivo(solicitar.motivo());
         adocaoRepository.save(adocao);
 
         emailService.enviarEmail(
@@ -69,7 +87,8 @@ public class AdocaoService {
      * @param adocao informação da adoção
      */
     @Transactional
-    public void aprovar(Adocao adocao) {
+    public void aprovar(AprovarAdocaoDTO aprovar) {
+        Adocao adocao = adocaoRepository.findById(aprovar.idAdocao()).orElseThrow(() -> new ValidationException("Adoção não encontrada!"));
         adocao.setStatus(StatusAdocao.APROVADO);
         adocaoRepository.save(adocao);
 
@@ -80,7 +99,9 @@ public class AdocaoService {
     }
 
     @Transactional
-    public void reprovar(Adocao adocao) {
+    public void reprovar(ReprovarAdocaoDTO reprovar) {
+        Adocao adocao = adocaoRepository.findById(reprovar.idAdocao()).orElseThrow(() -> new ValidationException("Adoção não encontrada!"));
+        adocao.setJustificativaStatus(reprovar.justificativa());
         adocao.setStatus(StatusAdocao.REPROVADO);
         adocaoRepository.save(adocao);
 

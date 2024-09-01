@@ -1,5 +1,7 @@
 package br.com.alura.adopet.api.model;
 
+import br.com.alura.adopet.api.dto.pet.CadastrarPetDTO;
+import br.com.alura.adopet.api.enums.TipoPet;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -17,15 +19,12 @@ public class Pet {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
     @Column(name = "tipo")
     private TipoPet tipo;
 
-    @NotBlank
     @Column(name = "nome")
     private String nome;
 
-    @NotBlank
     @Column(name = "raca")
     private String raca;
 
@@ -33,11 +32,9 @@ public class Pet {
     @Column(name = "idade")
     private Integer idade;
 
-    @NotBlank
     @Column(name = "cor")
     private String cor;
 
-    @NotNull
     @Column(name = "peso")
     private Float peso;
 
@@ -52,6 +49,17 @@ public class Pet {
     @OneToOne(mappedBy = "pet")
     @JsonBackReference("adocao_pets")
     private Adocao adocao;
+
+    public Pet(CadastrarPetDTO petDTO) {
+        this.tipo = petDTO.tipo();
+        this.nome = petDTO.nome();
+        this.raca = petDTO.raca();
+        this.idade = petDTO.idade();
+        this.cor = petDTO.cor();
+        this.peso = petDTO.peso();
+    }
+
+    public Pet() {}
 
     @Override
     public boolean equals(Object o) {

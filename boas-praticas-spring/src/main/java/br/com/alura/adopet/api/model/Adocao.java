@@ -1,10 +1,9 @@
 package br.com.alura.adopet.api.model;
 
+import br.com.alura.adopet.api.enums.StatusAdocao;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,19 +20,16 @@ public class Adocao {
     @Column(name = "data")
     private LocalDateTime data;
 
-    @NotNull
     @ManyToOne
     @JsonBackReference("tutor_adocoes")
     @JoinColumn(name = "tutor_id")
     private Tutor tutor;
 
-    @NotNull
     @OneToOne
     @JoinColumn(name = "pet_id")
     @JsonManagedReference("adocao_pets")
     private Pet pet;
 
-    @NotBlank
     @Column(name = "motivo")
     private String motivo;
 

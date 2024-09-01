@@ -1,4 +1,4 @@
-package br.com.alura.adopet.api.model;
+package br.com.alura.adopet.api.enums;
 
 public enum StatusAdocao {
 
