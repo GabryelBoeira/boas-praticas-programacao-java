@@ -25,11 +25,11 @@ public class Adocao {
 
     private String justificativaStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference("tutor_adocoes")
     private Tutor tutor;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonManagedReference("adocao_pets")
     private Pet pet;
 
