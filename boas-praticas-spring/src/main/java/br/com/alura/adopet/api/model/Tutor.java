@@ -1,5 +1,6 @@
 package br.com.alura.adopet.api.model;
 
+import br.com.alura.adopet.api.dto.tutor.AtualizarTutorDTO;
 import br.com.alura.adopet.api.dto.tutor.CadastrarTutorDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -36,44 +37,31 @@ public class Tutor {
         this.email = dto.email();
     }
 
-    public Long getId() {
-        return id;
+    public void atualizarTutor(AtualizarTutorDTO dto) {
+        this.id = dto.id();
+        this.nome = dto.nome();
+        this.telefone = dto.telefone();
+        this.email = dto.email();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getNome() {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getTelefone() {
         return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public List<Adocao> getAdocoes() {
         return adocoes;
-    }
-
-    public void setAdocoes(List<Adocao> adocoes) {
-        this.adocoes = adocoes;
     }
 
     @Override
