@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ValidacaoTutorComAdocaoEmAndamento {
+public class ValidacaoTutorComAdocaoEmAndamento implements ValidacaoSolicidacaoAdocao {
 
     private final AdocaoRepository adocaoRepository;
     private final TutorService tutorService;
@@ -22,6 +22,7 @@ public class ValidacaoTutorComAdocaoEmAndamento {
         this.tutorService = tutorService;
     }
 
+    @Override
     public void validar(SolicitarAdocaoDTO dto) {
         List<Adocao> adocoes = adocaoRepository.findAll();
         Tutor tutor = tutorService.buscarPorId(dto.tutorId());

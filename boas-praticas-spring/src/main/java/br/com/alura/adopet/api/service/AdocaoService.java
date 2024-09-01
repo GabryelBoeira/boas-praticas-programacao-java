@@ -8,6 +8,7 @@ import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.enums.StatusAdocao;
 import br.com.alura.adopet.api.model.Tutor;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
+import br.com.alura.adopet.api.validacao.ValidacaoSolicidacaoAdocao;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class AdocaoService {
     private final TutorService tutorService;
 
     @Autowired
+    private List<ValidacaoSolicidacaoAdocao> validadores;
+
+    @Autowired
     public AdocaoService(AdocaoRepository adocaoRepository, EmailService emailService, PetService petService, TutorService tutorService) {
         this.adocaoRepository = adocaoRepository;
         this.emailService = emailService;
@@ -41,6 +45,8 @@ public class AdocaoService {
 
         Tutor tutor = tutorService.buscarPorId(solicitar.tutorId());
         if (tutor == null) throw new ValidationException("Tutor não encontrado. Favor informar um tutor existente");
+
+        validadores.forEach(v -> v.validar(solicitar));
 
         Adocao adocao = new Adocao();
         adocao.setPet(pet);
